@@ -24,9 +24,13 @@ struct LaunchDetailView: View {
             VStack{
                 rocketImage
                 
+                logo
+                
+                statusField(text: "Launch Successful", background: .green.opacity(0.9))
+                
                 countdown
                                 
-                logo
+                
                 
                 weatherInformation
 
@@ -73,18 +77,20 @@ struct LaunchDetailView: View {
                 .padding()
                 
             }
-            
+
         }
         .cornerRadius(14)
         .padding()
     }
     
-    var status: some View {
-        Text("To Be Determined")
+
+    
+    func statusField(text: String, background: Color? = nil, foregroundStyle: Color? = nil) -> some View {
+        Text(text)
             .bold()
-            .foregroundStyle(.black)
+            .foregroundStyle(foregroundStyle ?? .black)
             .padding(.horizontal)
-            .background(.white)
+            .background(background ?? .white)
             .cornerRadius(14)
     }
     
@@ -146,7 +152,9 @@ struct LaunchDetailView: View {
         GeometryReader{ geometry in
             let columns = calculateColumnCount(for: geometry.size.width)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: columns)) {
+            let itemWidth: CGFloat = geometry.size.width / CGFloat(columns) - 16
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.adaptive(minimum: itemWidth, maximum: itemWidth), spacing: 10), count: columns)) {
                 detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
                 detailBlock(title: "Orbit", content: "Geostationary Transfer Orbit")
                 detailBlock(title: "Rocket Name 🚀", content: "Long March 7A")
@@ -187,11 +195,19 @@ struct LaunchDetailView: View {
         VStack{
             ScrollView(.horizontal) {
                 HStack{
-                    weatherInfoBlock(content: "🌡️ 21.7 °C")
-                    weatherInfoBlock(content: "💨 13.4 km/h aus 126°")
+                    statusField(text: "15:32 UTC")
                     
+                    statusField(text: "21.7 °C")
+                    
+                    statusField(text: "Wind speed 13.4 km/h")
+                    
+                    statusField(text: "Wind direction 126°")
+                    
+                    statusField(text: "Weather code 3")
+                                
                 }
             }
+            .scrollIndicators(.hidden)
         }
         .padding(.horizontal)
         
