@@ -33,7 +33,7 @@ struct HomeView: View {
             
             
             VStack{
-                Text("Next Launch")
+                Text("Spectrum | Maiden Flight")
                     .bold()
 
                     .padding()
@@ -50,7 +50,6 @@ struct HomeView: View {
                 }
             .background(Color.gray.opacity(0.1))
             .cornerRadius(12)
-            .padding()
             
             VStack{
                 standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
@@ -60,7 +59,6 @@ struct HomeView: View {
                 standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
 
             }
-            .padding()
 
 
             
@@ -69,28 +67,36 @@ struct HomeView: View {
         }
     }
     
+    @ViewBuilder
     func standardLaunchRow(imageName: String, name: String, startDate: String) -> some View {
-        HStack{
-            Image("thumbnail_image")
-                .resizable()
-                .frame(width: 55, height: 55)
-                .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
-            
-            
-            VStack(alignment: .leading){
-                Text("Spectrum | Maiden Flight")
-                    .bold()
-                Text("04.04.2025")
+        NavigationLink {
+            LaunchDetailView()
+        } label: {
+            HStack{
+                Image("thumbnail_image")
+                    .resizable()
+                    .frame(width: 55, height: 55)
+                    .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
+                
+                
+                VStack(alignment: .leading){
+                    Text("Spectrum | Maiden Flight")
+                        .bold()
+                    Text("04.04.2025")
+                }
+                
+                Spacer()
                 
                 
             }
-            Spacer()
-            
-            
+            .padding()
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(15)
         }
-        .padding(8)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(15)
+        .foregroundStyle(.white)
+
+        
+        
         
     }
     

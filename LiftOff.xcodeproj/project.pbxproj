@@ -6,13 +6,41 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DADA483E2D97DBEB00669098 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = DADA483D2D97DBEB00669098 /* Apollo */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		DADA48102D972CD400669098 /* LiftOff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftOff.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DADA48422D97DE0200669098 /* Exceptions for "LiftOff" folder in "LiftOff" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				schema.graphqls,
+			);
+			target = DADA480F2D972CD400669098 /* LiftOff */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		DADA48432D97DE0200669098 /* Exceptions for "LiftOff" folder in "Compile Sources" phase from "LiftOff" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = DADA480C2D972CD400669098 /* Sources */;
+			membershipExceptions = (
+				schema.graphqls,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DADA48122D972CD400669098 /* LiftOff */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DADA48422D97DE0200669098 /* Exceptions for "LiftOff" folder in "LiftOff" target */,
+				DADA48432D97DE0200669098 /* Exceptions for "LiftOff" folder in "Compile Sources" phase from "LiftOff" target */,
+			);
 			path = LiftOff;
 			sourceTree = "<group>";
 		};
@@ -23,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DADA483E2D97DBEB00669098 /* Apollo in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +94,7 @@
 			);
 			name = LiftOff;
 			packageProductDependencies = (
+				DADA483D2D97DBEB00669098 /* Apollo */,
 			);
 			productName = LiftOff;
 			productReference = DADA48102D972CD400669098 /* LiftOff.app */;
@@ -94,6 +124,9 @@
 			);
 			mainGroup = DADA48072D972CD400669098;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DADA483C2D97DBEB00669098 /* XCRemoteSwiftPackageReference "apollo-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DADA48112D972CD400669098 /* Products */;
 			projectDirPath = "";
@@ -324,6 +357,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DADA483C2D97DBEB00669098 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.19.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DADA483D2D97DBEB00669098 /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DADA483C2D97DBEB00669098 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DADA48082D972CD400669098 /* Project object */;
 }

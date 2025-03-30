@@ -1,0 +1,88 @@
+type Query {
+  upcomingLaunches(limit: Int = 5): [Launch!]!
+  launch(id: ID!): Launch
+}
+
+type Launch {
+  id: ID!
+  name: String!
+  net: String!
+  status: LaunchStatus!
+  pad: LaunchPad!
+  rocket: Rocket!
+  mission: Mission
+  image: ImageInfo
+  weather: WeatherData
+}
+
+type LaunchStatus {
+  name: String!
+  abbrev: String!
+  description: String
+}
+
+type LaunchPad {
+  name: String!
+  latitude: Float!
+  longitude: Float!
+  location: String!
+  country: String!
+  mapUrl: String
+  mapImage: String
+}
+
+type Rocket {
+  id: ID!
+  name: String!
+  fullName: String
+}
+
+type Mission {
+  id: ID!
+  name: String
+  type: String
+  description: String
+  orbit: Orbit
+  agencies: [Agency]
+  infoUrls: [String]
+  vidUrls: [String]
+}
+
+type Orbit {
+  name: String!
+  abbrev: String!
+}
+
+type Agency {
+  id: ID!
+  name: String!
+  abbrev: String!
+  country: String!
+  description: String
+  logo: ImageInfo
+}
+
+type ImageInfo {
+  id: ID
+  name: String
+  imageUrl: String
+  thumbnailUrl: String
+  credit: String
+  license: License
+}
+
+type License {
+  name: String
+  link: String
+}
+
+type WeatherData {
+  temperature: Float!
+  temperatureUnit: String!
+  windspeed: Float!
+  windspeedUnit: String!
+  winddirection: Float!
+  weathercode: Int!
+  isDay: Boolean!
+  description: String!
+}
