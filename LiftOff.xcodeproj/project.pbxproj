@@ -14,33 +14,9 @@
 		DADA48102D972CD400669098 /* LiftOff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftOff.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		DADA48422D97DE0200669098 /* Exceptions for "LiftOff" folder in "LiftOff" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				schema.graphqls,
-			);
-			target = DADA480F2D972CD400669098 /* LiftOff */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		DADA48432D97DE0200669098 /* Exceptions for "LiftOff" folder in "Compile Sources" phase from "LiftOff" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = DADA480C2D972CD400669098 /* Sources */;
-			membershipExceptions = (
-				schema.graphqls,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DADA48122D972CD400669098 /* LiftOff */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				DADA48422D97DE0200669098 /* Exceptions for "LiftOff" folder in "LiftOff" target */,
-				DADA48432D97DE0200669098 /* Exceptions for "LiftOff" folder in "Compile Sources" phase from "LiftOff" target */,
-			);
 			path = LiftOff;
 			sourceTree = "<group>";
 		};

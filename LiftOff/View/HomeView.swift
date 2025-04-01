@@ -9,11 +9,14 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @ObservedObject var homeViewModel: LaunchScreenViewModel
+    
     var body: some View {
         VStack{
             NavigationView {
                 ScrollView {
                     content
+                        .padding(.horizontal)
                     
                     
                 }
@@ -33,7 +36,7 @@ struct HomeView: View {
             
             
             VStack{
-                Text("Spectrum | Maiden Flight")
+                Text("\(homeViewModel.launches.first?.name ?? "Loading")")
                     .bold()
 
                     .padding()
@@ -43,20 +46,20 @@ struct HomeView: View {
                     .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
                     .padding(.horizontal)
                 
-                Text("T- 01:21:34")
+                Text(homeViewModel.launches.first?.net ?? "Loading")
                     .bold()
                     .font(.title)
+                    .monospaced()
                     .padding()
                 }
-            .background(Color.gray.opacity(0.1))
+            //.background(Color.gray.opacity(0.1))
             .cornerRadius(12)
             
             VStack{
-                standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
-                standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
-                standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
-                standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
-                standardLaunchRow(imageName: "thumbnail_image", name: "Spectrum | Maiden Flight", startDate: "04.04.2025")
+                
+                ForEach(homeViewModel.launches, id: \.id) { launch in
+                    standardLaunchRow(imageName: "thumbnail_image", name: launch.name, startDate: launch.net)
+                }
 
             }
 
@@ -80,9 +83,13 @@ struct HomeView: View {
                 
                 
                 VStack(alignment: .leading){
-                    Text("Spectrum | Maiden Flight")
+                    Text(name)
                         .bold()
-                    Text("04.04.2025")
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    Text(startDate)
+                        .multilineTextAlignment(.leading)
                 }
                 
                 Spacer()
@@ -104,5 +111,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(homeViewModel: LaunchScreenViewModel())
 }

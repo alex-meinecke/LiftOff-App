@@ -109,10 +109,13 @@ struct LaunchDetailView: View {
     }
     
     var logo: some View {
-        Image("spacex")
-            .resizable()
-            .scaledToFit()
-            .padding()
+        VStack{
+            Image("spacex")
+                .resizable()
+                .scaledToFit()
+        }
+        .cornerRadius(14)
+        .padding()
     }
     
     var detailBlock: some View {
@@ -163,9 +166,9 @@ struct LaunchDetailView: View {
                 detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
 
             }
-            .padding(.horizontal)
+            .padding()
         }
-        .frame(height: 350)
+        .frame(height: 380)
     }
     
     func calculateColumnCount(for width: CGFloat) -> Int {
@@ -179,7 +182,12 @@ struct LaunchDetailView: View {
     
     var map: some View {
         VStack{
-            Map(position: $position)
+            Map(position: $position) {
+                
+                Marker(
+                "Wenchang Space Launch Site",
+                coordinate: CLLocationCoordinate2D(latitude: 19.618452, longitude: 110.955356))
+            }
                 .frame(height: 300)
             Text("Wenchang Space Launch Site, People's Republic of China")
             .padding(.vertical)
