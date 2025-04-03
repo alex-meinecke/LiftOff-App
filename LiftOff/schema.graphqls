@@ -6,7 +6,7 @@ type Query {
 type Launch {
   id: ID!
   name: String!
-  net: Date!
+  net: String!
   status: LaunchStatus!
   pad: LaunchPad!
   rocket: Rocket!

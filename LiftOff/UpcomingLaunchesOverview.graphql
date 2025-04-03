@@ -1,0 +1,22 @@
+query UpcomingLaunchesOverview($limit: Int = 5) {
+  upcomingLaunches(limit: $limit) {
+    id
+    name
+    net
+    status {
+      name
+      abbrev
+      description
+    }
+    pad {
+      country
+    }
+
+    image {
+      id
+      name
+      imageUrl
+      thumbnailUrl
+    }
+  }
+}

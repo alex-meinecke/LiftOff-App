@@ -19,7 +19,7 @@ struct LiftOffApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView(homeViewModel: LaunchScreenViewModel())
+            HomeView(homeViewModel: HomeViewModel())
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

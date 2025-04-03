@@ -9,14 +9,9 @@ import SwiftUI
 import MapKit
 
 struct LaunchDetailView: View {
-    
-    @State private var position = MapCameraPosition.region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 19.618452, longitude: 110.955356),
-            span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
-        )
-    )
-    
+    @State var progress: Double = 0
+    @ObservedObject var viewModel: LaunchDetailViewModel
+        
     var body: some View {
         
         ScrollView{
@@ -26,29 +21,42 @@ struct LaunchDetailView: View {
                 
                 logo
                 
-                statusField(text: "Launch Successful", background: .green.opacity(0.9))
+                statusField(text: viewModel.launchOverview.status.name, background: .green.opacity(0.9))
                 
-                countdown
-                                
-                
-                
-                weatherInformation
+                if !viewModel.isLoading {
+                    countdown
 
-                missionDescription
+                    weatherInformation
+
+                    missionDescription
+                    
+                    details
+                    
+                    map
+                }
                 
-                details
                 
-                map
             }
         }
-        .navigationTitle("Spectrum | Maiden Flight")
+        .navigationTitle(viewModel.launchOverview.name)
         .navigationBarTitleDisplayMode(.inline)
+        .animation(.bouncy, value: viewModel.isLoading)
+        .onAppear {
+            viewModel.startCountdown()
+        }
+        .refreshable {
+            viewModel.initializeFullViewModel()
+        }
     }
     
+    @ViewBuilder
     var missionDescription: some View {
-        detailBlock(title: "Mission Description", content: "A batch of satellites for the Starlink mega-constellation - SpaceX's project for space-based Internet communication system.")
-            .italic()
-            .padding()
+        if let missionDescription = viewModel.launch?.mission?.description {
+            detailBlock(title: "Mission Description", content: missionDescription)
+                .italic()
+                .padding()
+        }
+        
     }
     
     var rocketImage: some View{
@@ -56,19 +64,25 @@ struct LaunchDetailView: View {
         
         VStack{
             ZStack{
+
                 Image("main_image")
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
+                    .clipped()
+                
+                
                 VStack(alignment: .trailing){
                     HStack{
                         Spacer()
-                        Image(systemName: "moon.fill")
+                        if let weather = viewModel.launch?.weather {
+                            Image(systemName: weather.isDay ? "sun.max.fill" : "moon.fill")
                             .font(.title)
+                        }
                     }
                     Spacer()
                     HStack{
                         Spacer()
-                        Text("Credits: XY")
+                        Text("Credits: \(viewModel.launch?.image?.credit ?? "Unknown")")
                             .font(.callout)
                             .italic()
                     }
@@ -81,6 +95,7 @@ struct LaunchDetailView: View {
         }
         .cornerRadius(14)
         .padding()
+        .animation(.bouncy, value: viewModel.isLoading)
     }
     
 
@@ -96,12 +111,12 @@ struct LaunchDetailView: View {
     
     var countdown: some View {
         VStack{
-            Text("T- 01:21:34")
+            Text(viewModel.launchCountdown)
                 .bold()
                 .font(.title)
                 .monospaced()
-                
-            Text("2025-03-29 - 16:05:00")
+            
+            Text(viewModel.formatLaunchTimeString().formatted(date: .abbreviated, time: .standard))
                 .foregroundStyle(.gray)
         }
         .padding()
@@ -118,36 +133,61 @@ struct LaunchDetailView: View {
         .padding()
     }
     
-    var detailBlock: some View {
-        VStack(alignment: .leading){
-            
-            Text("Mission Details")
-                .bold()
-            Text("Spectrum Maiden Flight")
-                .bold()
-                .font(.title2)
-        }
-        .padding()
-        .background(.gray.opacity(0.2))
-        .cornerRadius(15)
+    @ViewBuilder
+    func detailBlock(title: String, content: String) -> some View {
         
 
-    }
-    
-    func detailBlock(title: String, content: String) -> some View {
+        
         VStack(alignment: .leading){
-            
             Text(title)
                 .bold()
+                .frame(maxWidth: .infinity, alignment: .leading)
             Text(content)
                 .bold()
                 .font(.title2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
             
             Spacer()
         }
         .padding()
         .background(.gray.opacity(0.3))
         .cornerRadius(15)
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+    }
+    
+    @ViewBuilder
+    func orbitDetails(orbitType: String) ->  some View {
+        
+        
+        
+        
+        ZStack {
+            // Orbits (optional)
+            Ellipse()
+                .stroke(Color.green, lineWidth: 1)
+                .frame(width: 2*150/4, height: 2*80/4)
+            
+            Ellipse()
+                .stroke(Color.pink, lineWidth: 1)
+                .frame(width: 150, height: 80)
+            
+            Ellipse()
+                .stroke(Color.orange, lineWidth: 1)
+                .frame(width: 3*150/4, height: 3*80/4)
+            
+
+            Text("🚀")
+                .font(.system(size: 14))
+                .offset(
+                    x: (3*150/8),
+                    y: (3*80/8)
+                )
+            
+
+            Text("🌍")
+                .font(.system(size: 35))
+        }
     }
     
     @ViewBuilder
@@ -158,12 +198,18 @@ struct LaunchDetailView: View {
             let itemWidth: CGFloat = geometry.size.width / CGFloat(columns) - 16
             
             LazyVGrid(columns: Array(repeating: GridItem(.adaptive(minimum: itemWidth, maximum: itemWidth), spacing: 10), count: columns)) {
-                detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
-                detailBlock(title: "Orbit", content: "Geostationary Transfer Orbit")
-                detailBlock(title: "Rocket Name 🚀", content: "Long March 7A")
-                detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
-                detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
-                detailBlock(title: "Mission Details", content: "Spectrum Maiden Flight")
+                
+                if let statusDescription = viewModel.launch?.status.description {
+                    detailBlock(title: "Status Description", content: statusDescription)
+                }
+                
+                if let orbit = viewModel.launch?.mission?.orbit?.name {
+                    detailBlock(title: "Orbit", content: orbit)
+                }
+                
+                detailBlock(title: "Rocket", content: viewModel.launch?.rocket.name ?? "Loading...")
+                
+                
 
             }
             .padding()
@@ -173,7 +219,7 @@ struct LaunchDetailView: View {
     
     func calculateColumnCount(for width: CGFloat) -> Int {
         
-        let itemWidth: CGFloat = 200
+        let itemWidth: CGFloat = 190
         
         let columns = Int(width/itemWidth)
         
@@ -182,14 +228,14 @@ struct LaunchDetailView: View {
     
     var map: some View {
         VStack{
-            Map(position: $position) {
+            Map(position: $viewModel.padPosition) {
                 
                 Marker(
-                "Wenchang Space Launch Site",
-                coordinate: CLLocationCoordinate2D(latitude: 19.618452, longitude: 110.955356))
+                    viewModel.launch?.pad.name ?? "Loading...",
+                    coordinate: CLLocationCoordinate2D(latitude: viewModel.launch?.pad.latitude ?? 0, longitude: viewModel.launch?.pad.longitude ?? 0))
             }
-                .frame(height: 300)
-            Text("Wenchang Space Launch Site, People's Republic of China")
+            .frame(height: 300)
+            Text(viewModel.launch?.pad.location ?? "Loading...")
             .padding(.vertical)
             
         }
@@ -200,45 +246,34 @@ struct LaunchDetailView: View {
     }
     
     var weatherInformation: some View {
-        VStack{
-            ScrollView(.horizontal) {
-                HStack{
-                    statusField(text: "15:32 UTC")
-                    
-                    statusField(text: "21.7 °C")
-                    
-                    statusField(text: "Wind speed 13.4 km/h")
-                    
-                    statusField(text: "Wind direction 126°")
-                    
-                    statusField(text: "Weather code 3")
-                                
+            VStack{
+                if let weather = viewModel.launch?.weather {
+                    ScrollView(.horizontal) {
+                        HStack{
+                            statusField(text: "15:32 UTC")
+                            
+                            statusField(text: "\(viewModel.launch?.weather?.temperature ?? 0) \(viewModel.launch?.weather?.temperatureUnit ?? "C")")
+                            
+                            statusField(text: "Wind speed \(weather.windspeed) \(weather.windspeedUnit)")
+                            
+                            statusField(text: "Wind direction \(weather.winddirection)")
+                            
+                            statusField(text: "Weather code \(weather.weathercode)")
+                            
+                        }
+                    }
+                    .scrollIndicators(.hidden)
                 }
             }
-            .scrollIndicators(.hidden)
-        }
-        .padding(.horizontal)
-        
-    }
-    
-    func weatherInfoBlock(content: String) -> some View {
-        VStack(alignment: .leading){
+            .padding(.horizontal)
 
-            Text(content)
-                .bold()
-                .font(.title2)
-            
-            Spacer()
-        }
-        .padding(.horizontal)
-        .background(.gray.opacity(0.3))
-        .cornerRadius(15)
     }
     
     
     
 }
-
+/*
 #Preview {
-    LaunchDetailView()
+    LaunchDetailView(viewModel: , position: <#T##arg#>)
 }
+*/

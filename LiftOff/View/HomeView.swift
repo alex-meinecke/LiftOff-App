@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @ObservedObject var homeViewModel: LaunchScreenViewModel
+    @ObservedObject var homeViewModel: HomeViewModel
     
     var body: some View {
         VStack{
@@ -17,13 +17,14 @@ struct HomeView: View {
                 ScrollView {
                     content
                         .padding(.horizontal)
-                    
-                    
                 }
                 .navigationTitle("LiftOff.")
                 .navigationBarTitleDisplayMode(.large)
                 .background(.black)
-                
+                .refreshable {
+                    homeViewModel.loadLauchesOverview()
+                    print(homeViewModel.launchDetailViewModels.first?.launchOverview.name ?? "Nix da :(")
+                }
             }
         }
         
@@ -36,7 +37,7 @@ struct HomeView: View {
             
             
             VStack{
-                Text("\(homeViewModel.launches.first?.name ?? "Loading")")
+                Text(homeViewModel.launchDetailViewModels.first?.launchOverview.name ?? "Loading...")
                     .bold()
 
                     .padding()
@@ -46,34 +47,36 @@ struct HomeView: View {
                     .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
                     .padding(.horizontal)
                 
-                Text(homeViewModel.launches.first?.net ?? "Loading")
-                    .bold()
-                    .font(.title)
-                    .monospaced()
-                    .padding()
+                if let nextUpcomingLaunch = homeViewModel.launchDetailViewModels.first {
+                    Text(nextUpcomingLaunch.launchCountdown)
+                        .bold()
+                        .font(.title)
+                        .monospaced()
+                        .padding()
                 }
-            //.background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
-            
-            VStack{
                 
-                ForEach(homeViewModel.launches, id: \.id) { launch in
-                    standardLaunchRow(imageName: "thumbnail_image", name: launch.name, startDate: launch.net)
+ 
                 }
-
+                .cornerRadius(12)
+                .onAppear {
+                    print("Trying to start countdown")
+                    
+                }
+            VStack{
+                ForEach(homeViewModel.launchDetailViewModels) { launchViewModel in
+                    standardLaunchRow(imageName: "thumbnail_image", viewModel: launchViewModel)
+                }
             }
-
-
-            
-            
-            
         }
     }
     
     @ViewBuilder
-    func standardLaunchRow(imageName: String, name: String, startDate: String) -> some View {
+    func standardLaunchRow(imageName: String, viewModel: LaunchDetailViewModel) -> some View {
         NavigationLink {
-            LaunchDetailView()
+            LaunchDetailView(viewModel: viewModel)
+                .onAppear {
+                    viewModel.initializeFullViewModel()
+                }
         } label: {
             HStack{
                 Image("thumbnail_image")
@@ -83,12 +86,12 @@ struct HomeView: View {
                 
                 
                 VStack(alignment: .leading){
-                    Text(name)
+                    Text(viewModel.launchOverview.name)
                         .bold()
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
 
-                    Text(startDate)
+                    Text(viewModel.formatLaunchTimeString().formatted(date: .abbreviated, time: .shortened))
                         .multilineTextAlignment(.leading)
                 }
                 
@@ -111,5 +114,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(homeViewModel: LaunchScreenViewModel())
+    HomeView(homeViewModel: HomeViewModel())
 }

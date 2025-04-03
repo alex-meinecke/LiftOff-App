@@ -1,0 +1,75 @@
+query GetLaunch($id: ID!) {
+  launch(id: $id) {
+    id
+    name
+    net
+    status {
+      name
+      abbrev
+      description
+    }
+    pad {
+      name
+      latitude
+      longitude
+      location
+      country
+      mapUrl
+      mapImage
+    }
+    rocket {
+      id
+      name
+      fullName
+    }
+    mission {
+      id
+      name
+      type
+      description
+      orbit {
+        name
+        abbrev
+      }
+      agencies {
+        id
+        name
+        abbrev
+        country
+        description
+        logo {
+          imageUrl
+          thumbnailUrl
+          credit
+          license {
+            name
+            link
+          }
+        }
+      }
+      infoUrls
+      vidUrls
+    }
+    image {
+      id
+      name
+      imageUrl
+      thumbnailUrl
+      credit
+      license {
+        name
+        link
+      }
+    }
+    weather {
+      temperature
+      temperatureUnit
+      windspeed
+      windspeedUnit
+      winddirection
+      weathercode
+      isDay
+      description
+    }
+  }
+}
