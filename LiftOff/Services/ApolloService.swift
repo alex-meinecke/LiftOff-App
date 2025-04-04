@@ -54,7 +54,7 @@ class ApolloService {
     }
     
     func fetchUpcomingLaunchOverview(completion: @escaping (Result<CustomLaunchAPI.UpcomingLaunchesOverviewQuery.Data, Error>) -> Void) {
-        client.fetch(query: CustomLaunchAPI.UpcomingLaunchesOverviewQuery()) { result in
+        client.fetch(query: CustomLaunchAPI.UpcomingLaunchesOverviewQuery(limit: 3)) { result in
             switch result {
             case .success(let graphQLResult):
                 if let data = graphQLResult.data {

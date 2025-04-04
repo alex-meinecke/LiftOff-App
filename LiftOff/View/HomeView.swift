@@ -27,7 +27,6 @@ struct HomeView: View {
                 }
             }
         }
-        
             
     }
     
@@ -37,41 +36,48 @@ struct HomeView: View {
             
             
             VStack{
-                Text(homeViewModel.launchDetailViewModels.first?.launchOverview.name ?? "Loading...")
+                Text(homeViewModel.nextUpcomingLaunchViewModel?.launchOverview.name ?? "Loading...")
                     .bold()
-
                     .padding()
-                Image("main_image")
+                
+                Image(uiImage: homeViewModel.nextUpcomingLaunchViewModel?.image ?? UIImage(named: "main_image")!)
                     .resizable()
                     .scaledToFit()
                     .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
                     .padding(.horizontal)
                 
-                if let nextUpcomingLaunch = homeViewModel.launchDetailViewModels.first {
-                    Text(nextUpcomingLaunch.launchCountdown)
+                    Text(homeViewModel.countdown)
                         .bold()
                         .font(.title)
                         .monospaced()
                         .padding()
-                }
                 
  
                 }
                 .cornerRadius(12)
                 .onAppear {
-                    print("Trying to start countdown")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                        homeViewModel.getNextUpcomingLaunch()
+                    }
+                    
                     
                 }
-            VStack{
-                ForEach(homeViewModel.launchDetailViewModels) { launchViewModel in
-                    standardLaunchRow(imageName: "thumbnail_image", viewModel: launchViewModel)
+            
+            if homeViewModel.showLaunches {
+                VStack{
+                    ForEach(homeViewModel.launchDetailViewModels) { launchViewModel in
+                        standardLaunchRow(viewModel: launchViewModel)
+                    }
                 }
+            } else {
+                ProgressView()
             }
         }
     }
     
     @ViewBuilder
-    func standardLaunchRow(imageName: String, viewModel: LaunchDetailViewModel) -> some View {
+    func standardLaunchRow(viewModel: LaunchDetailViewModel) -> some View {
+        
         NavigationLink {
             LaunchDetailView(viewModel: viewModel)
                 .onAppear {
@@ -79,11 +85,16 @@ struct HomeView: View {
                 }
         } label: {
             HStack{
-                Image("thumbnail_image")
-                    .resizable()
-                    .frame(width: 55, height: 55)
-                    .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
-                
+
+                if let imageThumbnail = viewModel.imageThumbnail {
+                    Image(uiImage: (imageThumbnail))
+                        .resizable()
+                        .frame(width: 55, height: 55)
+                        .clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 14,bottomLeading: 14,bottomTrailing: 14,topTrailing: 14)))
+                } else {
+                    ProgressView()
+                }
+
                 
                 VStack(alignment: .leading){
                     Text(viewModel.launchOverview.name)
@@ -104,8 +115,6 @@ struct HomeView: View {
             .cornerRadius(15)
         }
         .foregroundStyle(.white)
-
-        
         
         
     }

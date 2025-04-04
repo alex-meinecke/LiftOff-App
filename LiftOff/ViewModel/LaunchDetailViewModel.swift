@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import MapKit
 import _MapKit_SwiftUI
+import SwiftUICore
 
 class LaunchDetailViewModel: ObservableObject, Identifiable {
     @Published var launch: CustomLaunchAPI.GetLaunchQuery.Data.Launch?
@@ -20,14 +21,50 @@ class LaunchDetailViewModel: ObservableObject, Identifiable {
     
     @Published var isLoading: Bool = false
     
-    var timer: AnyCancellable?
+    @Published var image: UIImage?
+    @Published var imageThumbnail: UIImage?
+    @Published var agencyLogo: UIImage?
     
+    private let imageLoader = ImageLoaderService.shared
+    
+    var timer: AnyCancellable?
+        
     private let apolloService: ApolloService
     
     init(launchOverview: CustomLaunchAPI.UpcomingLaunchesOverviewQuery.Data.UpcomingLaunch, apolloService: ApolloService = .shared) {
         self.launchOverview = launchOverview
         self.apolloService = apolloService
+                
+        if let logoUrlString = launchOverview.image?.imageUrl {
+            imageLoader.loadImage(from: logoUrlString) { image in
+                self.image = image
+                
+            }
+        }
+        
+        imageThumbnail = loadThumbnailImage()
+        
+        guard let logoUrl = launch?.mission?.agencies?.first??.logo?.imageUrl else { return }
+        
+        imageLoader.loadImage(from: logoUrl) { logo in
+            self.agencyLogo = logo
+        }
+        
     }
+    
+    func loadThumbnailImage() -> UIImage? {
+        var newImage: UIImage?
+        
+        if let logoUrlString = launchOverview.image?.thumbnailUrl {
+            self.imageLoader.loadImage(from: logoUrlString) { image in
+                
+                newImage = image
+            }
+        }
+        return newImage
+    }
+    
+    
     
     func initializeFullViewModel() {
         self.isLoading = true
@@ -45,6 +82,7 @@ class LaunchDetailViewModel: ObservableObject, Identifiable {
         }
         
     }
+    
     
     func setupMap() {
         guard let launch else { return }

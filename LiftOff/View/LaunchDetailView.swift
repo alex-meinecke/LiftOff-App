@@ -22,10 +22,10 @@ struct LaunchDetailView: View {
                 logo
                 
                 statusField(text: viewModel.launchOverview.status.name, background: .green.opacity(0.9))
-                
-                if !viewModel.isLoading {
-                    countdown
 
+                    countdown
+                    
+                if !viewModel.isLoading {
                     weatherInformation
 
                     missionDescription
@@ -33,6 +33,8 @@ struct LaunchDetailView: View {
                     details
                     
                     map
+                } else {
+                    ProgressView()
                 }
                 
                 
@@ -41,8 +43,10 @@ struct LaunchDetailView: View {
         .navigationTitle(viewModel.launchOverview.name)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.bouncy, value: viewModel.isLoading)
+        .animation(.bouncy, value: viewModel.agencyLogo)
         .onAppear {
             viewModel.startCountdown()
+            
         }
         .refreshable {
             viewModel.initializeFullViewModel()
@@ -65,7 +69,7 @@ struct LaunchDetailView: View {
         VStack{
             ZStack{
 
-                Image("main_image")
+                Image(uiImage: viewModel.image ?? UIImage(named: "main_image")!)
                     .resizable()
                     .scaledToFill()
                     .clipped()
@@ -123,14 +127,23 @@ struct LaunchDetailView: View {
         
     }
     
+    @ViewBuilder
     var logo: some View {
         VStack{
-            Image("spacex")
-                .resizable()
-                .scaledToFit()
+        
+            
+            Image(uiImage: viewModel.agencyLogo ?? UIImage(named: "spacex")!)
+            .resizable()
+            .scaledToFit()
+            .transition(.opacity)
+            .frame(minHeight: 0, maxHeight: 75)
+            
+
         }
         .cornerRadius(14)
         .padding()
+        .animation(.easeInOut, value: viewModel.agencyLogo)
+        
     }
     
     @ViewBuilder
@@ -163,7 +176,7 @@ struct LaunchDetailView: View {
         
         
         ZStack {
-            // Orbits (optional)
+
             Ellipse()
                 .stroke(Color.green, lineWidth: 1)
                 .frame(width: 2*150/4, height: 2*80/4)
@@ -214,7 +227,7 @@ struct LaunchDetailView: View {
             }
             .padding()
         }
-        .frame(height: 380)
+        .frame(height: 400)
     }
     
     func calculateColumnCount(for width: CGFloat) -> Int {
